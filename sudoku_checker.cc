@@ -24,7 +24,7 @@ int sudoku[9][9];
 struct parameters {
   int row;
   int column;
-  int thread_id;
+  int threadId;
 };
 
 //  Each thread sets their respective
@@ -35,6 +35,8 @@ int sudokuStatus[NUM_THREADS];
 //  Threads will execute this function
 void *Runner(void *param);
 
+void CreateParam(int threadId, struct parameters param[]);
+ 
 int main(int argc, char* argv[]) {
   if (argc != 2) {
     cerr << "Usage: " << argv[0] << " <Sudoku solution file name>" 
@@ -61,6 +63,8 @@ int main(int argc, char* argv[]) {
 
   for (int i = 0; i < NUM_THREADS; ++i){
     cout << "main() : creating thread, " << i << endl;
+    CreateParam(i, param);
+
     threadCreate = pthread_create(&threads[i], NULL, Runner, (void *)&param[i]);
 
     if (threadCreate) {
@@ -74,7 +78,41 @@ int main(int argc, char* argv[]) {
   return 0;
 }
 
-void *Runner(void *param){
+void *Runner(void *param) {
+  struct parameters *paramPtr;
+  paramPtr = (struct parameters *) param;
 
   pthread_exit(NULL);
+}
+
+void CreateParam(int threadId, struct parameters param[]) {
+    // create a row and column checking thread
+    int i = threadId;
+ 
+    if (i == 0 || i == 1) {
+    param[i].row = 0;
+    param[i].column = 0;
+    param[i].threadId = i;
+    } else if (i == 2 || i == 3 || i == 4) {
+      //  Create the starting locations
+      //  for 3x3 checking threads to begin
+      //  starting at row 0
+      param[i].row = 0;
+      param[i].column = (0 + i - 2) * 3;
+      param[i].threadId = i;
+    } else if (i == 5 || i == 6 || i == 7) {
+      //  Create the starting locations
+      //  for 3x3 checking threads to begin
+      //  starting at row 3
+      param[i].row = 3;
+      param[i].column = (0 + i - 5) * 3;
+      param[i].threadId = i;
+    } else if (i == 8 || i == 9 || i == 10) {
+      //  Create the starting locations
+      //  for 3x3 checking threads to begin
+      //  starting at row 6
+      param[i].row = 6;
+      param[i].column = (0 + i - 8) * 3;
+      param[i].threadId = i;
+    }
 }
