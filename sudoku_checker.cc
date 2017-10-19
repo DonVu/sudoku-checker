@@ -22,9 +22,12 @@ int main(int argc, char* argv[]) {
 		return 1;
 	}
 
+	// Fill thread level sudoku array
 	ifstream sudokuFile(argv[1]);
 	if (sudokuFile.is_open()) {
-		cout << "congrats";
+		for (int i = 0; i < 9; ++i)
+			for (int j = 0; j < 9; ++j)
+				sudokuFile >> sudoku[i][j];
 	} else {
 		cerr << "Error opening file\n";
 
