@@ -10,6 +10,7 @@
 #include <iostream>
 #include <fstream>
 #include <pthread.h>
+#include <cstdlib>
 using namespace std;
 
 //  11 threads are created - 2 for row/column
@@ -31,7 +32,7 @@ struct parameters {
 int sudokuStatus[NUM_THREADS];
 
 //  Threads will execute this function
-void *runner(void *param);
+void *Runner(void *param);
 
 int main(int argc, char* argv[]) {
   if (argc != 2) {
@@ -52,10 +53,26 @@ int main(int argc, char* argv[]) {
 
     return 1;
   }
-	
+
+  pthread_t threads [NUM_THREADS];
+  struct parameters param[NUM_THREADS];
+  int threadCreate;
+
+  for (int i = 0; i < NUM_THREADS; ++i){
+    cout << "main() : creating thread, " << i << endl;
+    threadCreate = pthread_create(&threads[i], NULL, Runner, (void *)&param[i]); 
+  }
+
+  if (threadCreate) {
+    cerr << "Error: unable to create thread" << endl;
+
+    return 1;
+  }
+  pthread_exit(NULL);
   return 0;
 }
 
-void *runner(void *param){
+void *Runner(void *param){
 
+  pthread_exit(NULL);
 }
