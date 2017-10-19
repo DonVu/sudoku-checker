@@ -61,7 +61,7 @@ int main(int argc, char* argv[]) {
   struct parameters param[NUM_THREADS];
   int threadCreate;
 
-  for (int i = 0; i < NUM_THREADS; ++i){
+  for (int i = 0; i < NUM_THREADS; ++i) {
     cout << "main() : creating thread, " << i << endl;
     CreateParam(i, param);
 
@@ -73,6 +73,27 @@ int main(int argc, char* argv[]) {
       return 1;
     }
   }
+ 
+  //  wait and join other threads
+  for (int i = 0; i < NUM_THREADS; ++i) {
+    pthread_join(threads[i], NULL);
+
+    cout << "Main() -- Thread with ID: " << i << " ... " 
+      << "joined. " << endl;
+  }
+  
+  //  check the results of all the threads
+  bool isValid = true;
+  for (int i = 0; i < NUM_THREADS; ++i) {
+    if (sudokuStatus[i] == 0) isValid = false;
+    cout << "Thread " << i << " reports: " << sudokuStatus[i] << endl;
+  } 
+
+  if (isValid) {
+    cout << "This sudoku is a valid solution!" << endl;
+  } else {
+    cout << "This is not a valid sudoku solution." << endl;
+  }
 
   pthread_exit(NULL);
   return 0;
@@ -81,6 +102,52 @@ int main(int argc, char* argv[]) {
 void *Runner(void *param) {
   struct parameters *paramPtr;
   paramPtr = (struct parameters *) param;
+
+  //  Row checking thread
+  if (paramPtr->threadId == 0) {
+    int sudokuList[9];
+    
+    bool isValid = true;
+    for (int i = paramPtr->row; i < 9; ++i) 
+      for (int j = paramPtr->column; j < 9; ++j)
+        sudokuList[sudoku[i][j] - 1] = 1;
+        
+    for (int k = 0; k < 9; ++k)
+      if (sudokuList[k] == 0) isValid = false;
+
+    if (isValid) sudokuStatus[paramPtr->threadId] = 1;
+  } else if (paramPtr->threadId == 1) {
+      //  column checking thread
+      int sudokuList[9];
+    
+      bool isValid = true;
+      for (int i = paramPtr->row; i < 9; ++i)
+        for (int j = paramPtr->column; j < 9; ++j)
+          sudokuList[sudoku[j][i] - 1] = 1;
+        
+      for (int k = 0; k < 9; ++k)
+        if (sudokuList[k] == 0) isValid = false;
+      
+
+      if (isValid) sudokuStatus[paramPtr->threadId] = 1;
+  } else {
+    
+      //  3x3 checking thread
+      int sudokuList[9];
+    
+      bool isValid = true;
+      int paramRow = paramPtr->row;
+      int paramColumn = paramPtr->column;
+      for (int i = paramRow; i < (paramRow + 3); ++i) 
+        for (int j = paramColumn; j < (paramColumn + 3); ++j)
+          sudokuList[sudoku[i][j] - 1] = 1; 
+      
+      
+      for (int k = 0; k < 9; ++k)
+        if (sudokuList[k] == 0) isValid = false;
+
+      if (isValid) sudokuStatus[paramPtr->threadId] = 1;
+  }
 
   pthread_exit(NULL);
 }
