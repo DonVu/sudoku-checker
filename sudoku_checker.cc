@@ -8,12 +8,25 @@
 
 */
 #include <iostream>
+#include <fstream>
 using namespace std;
+
+// Global sudoku array shared by all threads
+int sudoku[9][9];
 
 int main(int argc, char* argv[]) {
 	if (argc != 2) {
 		cerr << "Usage: " << argv[0] << " <Sudoku solution file name>" 
 			<< endl;
+
+		return 1;
+	}
+
+	ifstream sudokuFile(argv[1]);
+	if (sudokuFile.is_open()) {
+		cout << "congrats";
+	} else {
+		cerr << "Error opening file\n";
 
 		return 1;
 	}
