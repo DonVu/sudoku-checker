@@ -60,14 +60,16 @@ int main(int argc, char* argv[]) {
 
   for (int i = 0; i < NUM_THREADS; ++i){
     cout << "main() : creating thread, " << i << endl;
-    threadCreate = pthread_create(&threads[i], NULL, Runner, (void *)&param[i]); 
+    threadCreate = pthread_create(&threads[i], NULL, Runner, (void *)&param[i]);
+
+
+    if (threadCreate) {
+      cerr << "Error: unable to create thread" << endl;
+
+      return 1;
+    }
   }
 
-  if (threadCreate) {
-    cerr << "Error: unable to create thread" << endl;
-
-    return 1;
-  }
   pthread_exit(NULL);
   return 0;
 }
