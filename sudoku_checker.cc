@@ -24,6 +24,7 @@ int sudoku[9][9];
 struct parameters {
   int row;
   int column;
+  int thread_id;
 };
 
 //  Each thread sets their respective
@@ -61,7 +62,6 @@ int main(int argc, char* argv[]) {
   for (int i = 0; i < NUM_THREADS; ++i){
     cout << "main() : creating thread, " << i << endl;
     threadCreate = pthread_create(&threads[i], NULL, Runner, (void *)&param[i]);
-
 
     if (threadCreate) {
       cerr << "Error: unable to create thread" << endl;
