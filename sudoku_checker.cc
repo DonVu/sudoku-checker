@@ -30,6 +30,9 @@ struct parameters {
 //  or 0 for invalid
 int sudokuStatus[NUM_THREADS];
 
+//  Threads will execute this function
+void *runner(void *param);
+
 int main(int argc, char* argv[]) {
   if (argc != 2) {
     cerr << "Usage: " << argv[0] << " <Sudoku solution file name>" 
@@ -51,4 +54,8 @@ int main(int argc, char* argv[]) {
   }
 	
   return 0;
+}
+
+void *runner(void *param){
+
 }
